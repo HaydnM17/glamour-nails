@@ -437,26 +437,27 @@ body:not(.menu-open) .site-header.on-dark .menu-btn[aria-expanded="true"] .bars 
 .services-after { margin-top: 28px; color: var(--ink-2); }
 .services-after p { margin: 0 0 8px; }
 
-/* photos: two rows, each swipes or steps sideways with its own arrows */
+/* photos: two rows, each shows as many whole photos as fit and loops both ways */
 .reels { display: grid; gap: 4px; }
 .reel {
   --edge: max(var(--gutter), (100cqw - var(--max)) / 2);
-  --cols: 1.6;
+  --cols: 2;
   --gap: 10px;
   position: relative; container-type: inline-size;
 }
-.reel-track {
-  --card: calc((min(var(--max), 100cqw - var(--gutter) * 2) - var(--gap) * (var(--cols) - 1)) / var(--cols));
-  display: flex; gap: var(--gap);
-  overflow-x: auto; overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  padding: 10px var(--edge) 22px;
-  scroll-padding-inline: var(--edge);
-  scrollbar-width: none;
+.reel-viewport {
+  margin-inline: var(--edge);
+  padding-block: 10px 22px;
+  overflow-x: clip; overflow-y: visible;
+  touch-action: pan-y;
 }
-.reel-track::-webkit-scrollbar { display: none; }
-.reel-track:focus-visible { outline-offset: -2px; }
-.reel-track > li { flex: 0 0 var(--card); scroll-snap-align: start; }
+.reel-track {
+  display: flex; gap: var(--gap);
+  transform: translate3d(var(--x, 0px), 0, 0);
+}
+.reel-track.is-moving { transition: transform .75s cubic-bezier(.65, 0, .25, 1); }
+.reel-track:focus-visible { outline-offset: 4px; }
+.reel-track > li { flex: 0 0 calc((100% - var(--gap) * (var(--cols) - 1)) / var(--cols)); }
 
 .reel-btn {
   position: absolute; top: calc(50% - 6px); z-index: 2;
@@ -474,10 +475,6 @@ body:not(.menu-open) .site-header.on-dark .menu-btn[aria-expanded="true"] .bars 
 .reel-next { right: max(6px, calc(var(--edge) - 22px)); }
 .reel-btn:hover { background: var(--accent); border-color: var(--accent); color: var(--on-accent); transform: scale(1.08); }
 .reel-btn:active { transform: scale(.94); }
-.reel-btn.is-off {
-  opacity: 0; visibility: hidden; transform: scale(.6);
-  transition: opacity var(--t-ui) ease, transform var(--t-ui) var(--ease-out), visibility 0s linear var(--t-ui);
-}
 
 .photo {
   position: relative; display: block; width: 100%; aspect-ratio: 4 / 5;
@@ -765,8 +762,8 @@ body[data-grammar="bands"] .section--alt .visit-card { background: var(--ground)
 @media (min-width: 1000px) {
   .reel { --cols: 4; --gap: 14px; }
   .reel-btn { width: 52px; height: 52px; margin-top: -26px; }
-  .reel-prev { left: max(6px, calc(var(--edge) - 26px)); }
-  .reel-next { right: max(6px, calc(var(--edge) - 26px)); }
+  .reel-prev { left: max(6px, calc(var(--edge) - 70px)); }
+  .reel-next { right: max(6px, calc(var(--edge) - 70px)); }
   .reviews { columns: 3; }
 }
 

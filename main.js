@@ -165,45 +165,106 @@
     card.style.setProperty('--my', (e.clientY - r.top) + 'px');
   });
 
-  /* ---------- photo rows: arrows step one screenful (four cards on desktop) ---------- */
+  /* ---------- photo rows: show whole cards only, arrows step a screenful, loop forever ---------- */
   [].forEach.call(doc.querySelectorAll('[data-reel]'), function (reel) {
     var track = reel.querySelector('.reel-track');
+    var viewport = reel.querySelector('.reel-viewport');
     var prev = reel.querySelector('[data-reel-prev]');
     var next = reel.querySelector('[data-reel-next]');
-    if (!track || !prev || !next) return;
-    [].forEach.call(track.children, function (li, i) { li.style.setProperty('--i', i); });
+    if (!track || !viewport || !prev || !next) return;
+    var originals = [].slice.call(track.children);
+    var n = originals.length;
+    if (n < 2) return;
 
-    function pageWidth() {
-      var cs = getComputedStyle(track);
-      var gap = parseFloat(cs.columnGap) || 0;
-      var first = track.firstElementChild;
-      if (!first) return track.clientWidth;
-      var step = first.getBoundingClientRect().width + gap;
-      var inner = track.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-      return Math.max(1, Math.floor((inner + gap + 1) / step)) * step;
+    /* one copy of the set on each side, hidden from screen readers and the tab order */
+    function copySet() {
+      var frag = doc.createDocumentFragment();
+      originals.forEach(function (li) {
+        var c = li.cloneNode(true);
+        c.setAttribute('aria-hidden', 'true');
+        [].forEach.call(c.querySelectorAll('button, a'), function (el) { el.tabIndex = -1; });
+        frag.appendChild(c);
+      });
+      return frag;
     }
-    function update() {
-      var max = track.scrollWidth - track.clientWidth;
-      var atStart = track.scrollLeft <= 2;
-      var atEnd = track.scrollLeft >= max - 2;
-      if (atStart && doc.activeElement === prev) next.focus({ preventScroll: true });
-      if (atEnd && doc.activeElement === next) prev.focus({ preventScroll: true });
-      prev.classList.toggle('is-off', atStart);
-      next.classList.toggle('is-off', atEnd);
+    track.insertBefore(copySet(), track.firstChild);
+    track.appendChild(copySet());
+    [].forEach.call(track.children, function (li, i) { li.style.setProperty('--i', Math.max(0, i - n)); });
+
+    var index = n;
+    var busy = false;
+    var fallback = 0;
+
+    function step() {
+      var a = track.children[0].getBoundingClientRect();
+      var b = track.children[1].getBoundingClientRect();
+      return b.left - a.left;
+    }
+    function perView() {
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      return Math.max(1, Math.round((viewport.clientWidth + gap) / step()));
+    }
+    function place(animate, offset) {
+      track.classList.toggle('is-moving', !!animate && !reduced());
+      track.style.setProperty('--x', (-index * step() + (offset || 0)).toFixed(2) + 'px');
+    }
+    function settle() {
+      clearTimeout(fallback);
+      track.classList.remove('is-moving');
+      if (index >= 2 * n) index -= n;
+      else if (index < n) index += n;
+      place(false);
+      busy = false;
     }
     function go(dir) {
-      track.scrollBy({ left: dir * pageWidth(), behavior: reduced() ? 'auto' : 'smooth' });
+      if (busy) return;
+      busy = true;
+      index += dir * perView();
+      place(true);
+      if (reduced()) { settle(); return; }
+      fallback = setTimeout(settle, 1000);
     }
+    track.addEventListener('transitionend', function (e) {
+      if (e.target === track && e.propertyName === 'transform') settle();
+    });
     prev.addEventListener('click', function () { go(-1); });
     next.addEventListener('click', function () { go(1); });
-    var queued = false;
-    track.addEventListener('scroll', function () {
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(function () { queued = false; update(); });
-    }, { passive: true });
-    window.addEventListener('resize', update);
-    update();
+    track.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+    });
+
+    /* swipe on touch screens */
+    var drag = null;
+    var swallowClick = false;
+    viewport.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' || busy) return;
+      drag = { x: e.clientX, y: e.clientY, dx: 0, locked: false };
+    });
+    viewport.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      drag.dx = e.clientX - drag.x;
+      if (!drag.locked && Math.abs(drag.dx) > 8 && Math.abs(drag.dx) > Math.abs(e.clientY - drag.y)) drag.locked = true;
+      if (drag.locked) place(false, drag.dx);
+    });
+    function endDrag() {
+      if (!drag) return;
+      var d = drag;
+      drag = null;
+      if (!d.locked) return;
+      swallowClick = true;
+      setTimeout(function () { swallowClick = false; }, 350);
+      if (Math.abs(d.dx) > 40) go(d.dx < 0 ? 1 : -1);
+      else place(true);
+    }
+    viewport.addEventListener('pointerup', endDrag);
+    viewport.addEventListener('pointercancel', endDrag);
+    viewport.addEventListener('click', function (e) {
+      if (swallowClick) { e.stopPropagation(); e.preventDefault(); swallowClick = false; }
+    }, true);
+
+    window.addEventListener('resize', function () { if (!busy) place(false); });
+    place(false);
   });
 
   /* ---------- reviews: pop in, float, tilt, open ---------- */
