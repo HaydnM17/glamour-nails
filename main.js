@@ -12,7 +12,26 @@
   var header = doc.getElementById('header');
   var progress = header && header.querySelector('.progress');
   var veilEl = doc.querySelector('.env-veil');
+  var darkSec = doc.querySelector('.dark');
+  var hands = [].slice.call(doc.querySelectorAll('[data-hand]'));
   var ticking = false;
+
+  /* dark opening: the top hand drifts slower than the page; side hands slide in from their edge */
+  function updateDark(y) {
+    if (!darkSec) return;
+    var vh = window.innerHeight;
+    if (header) header.classList.toggle('on-dark', darkSec.getBoundingClientRect().bottom > header.offsetHeight + 4);
+    var still = reduced();
+    root.style.setProperty('--hy', still ? '0px' : (Math.min(y, vh * 1.2) * 0.35).toFixed(1) + 'px');
+    hands.forEach(function (fig) {
+      var r = fig.getBoundingClientRect();
+      if (r.bottom < -vh || r.top > vh * 2) return;
+      var inn = still ? 1 : Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.65)));
+      var p = still ? 0 : (r.top + r.height / 2 - vh / 2) / vh;
+      fig.style.setProperty('--in', inn.toFixed(3));
+      fig.style.setProperty('--p', p.toFixed(3));
+    });
+  }
 
   function onScroll() {
     if (ticking) return;
@@ -27,10 +46,12 @@
         root.style.setProperty('--veil', (v * 0.85).toFixed(3));
       }
       root.style.setProperty('--py', reduced() ? '0px' : (Math.min(y, window.innerHeight) * 0.3).toFixed(1) + 'px');
+      updateDark(y);
     });
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
+  reduceQuery.addEventListener('change', onScroll);
   onScroll();
 
   /* ---------- phone menu ---------- */
