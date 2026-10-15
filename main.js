@@ -593,3 +593,23 @@
     });
   }
 })();
+
+/* ---------- nav links land on the section heading ---------- */
+/* Some sections open with a "Their set" hand photo. A nav link to one of those lands on the heading below it,
+   so Photos opens on "The work" and Visit on "Hours and address" (Haydn, 2026-10-15). */
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute('href');
+    if (id.length < 2) return;
+    var section = document.querySelector(id);
+    if (!section || !section.querySelector(':scope > [data-hand]')) return;
+    var head = section.querySelector('.section-head');
+    if (!head) return;
+    e.preventDefault();
+    head.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    if (history.replaceState) history.replaceState(null, '', id);
+  });
+})();
