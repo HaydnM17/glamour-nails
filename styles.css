@@ -494,13 +494,15 @@ body[data-grammar="bands"] .section--dark {
   display: flex; align-items: center; gap: 14px;
   padding: 16px 0; border-bottom: 1px solid var(--line);
 }
-.service .motif { width: .25em; height: .25em; font-size: clamp(2.2rem, 9.5vw, 7.5rem); min-width: 14px; min-height: 14px; }
+.service .motif { width: .3em; height: .3em; font-size: clamp(2rem, 8vw, 5.5rem); min-width: 14px; min-height: 14px; }
 .service h3 {
-  font-size: clamp(2.2rem, 9.5vw, 7.5rem); line-height: .95; letter-spacing: 0;
-  text-transform: uppercase; min-width: 0;
+  font-family: var(--font-body); font-weight: 600;
+  font-size: clamp(2rem, 8vw, 5.5rem); line-height: 1.05; letter-spacing: -.035em;
+  min-width: 0;
 }
 .services-after { margin-top: 28px; color: var(--ink-2); }
 .services-after p { margin: 0 0 8px; }
+.services-after .services-book { margin: 0 0 18px; }
 
 /* photos: two rows, each shows as many whole photos as fit and loops both ways */
 .reels { display: grid; gap: 4px; }
