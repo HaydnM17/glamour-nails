@@ -366,11 +366,6 @@ body[data-grammar="bands"] .site-footer { background: var(--surface); }
           mask: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
 }
 .dh--right img { margin-left: -25vw; }
-.dh--top img {
-  width: 170vw; margin-left: -35vw;
-  -webkit-mask: linear-gradient(to bottom, transparent, #000 22%, #000 72%, transparent);
-          mask: linear-gradient(to bottom, transparent, #000 22%, #000 72%, transparent);
-}
 .dh figcaption {
   position: relative; z-index: 1;
   margin: -8vw var(--gutter) 28px;
@@ -395,9 +390,6 @@ body[data-grammar="bands"] .site-footer { background: var(--surface); }
   }
   .dh--left figcaption { right: max(var(--gutter), (100vw - var(--max)) / 2); }
   .dh--right figcaption { left: max(var(--gutter), (100vw - var(--max)) / 2); text-align: left; }
-  .dh--top { height: clamp(440px, 74vh, 760px); }
-  .dh--top img { left: 50%; width: min(100vw, 1440px); translate: -50% -50%; margin-left: 0; }
-  .dh--top figcaption { left: max(var(--gutter), (100vw - var(--max)) / 2); top: 70%; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -419,7 +411,6 @@ body[data-grammar="bands"] .site-footer { background: var(--surface); }
   }
   .dh--left img { transform-origin: 0 55%; }
   .dh--right img { transform-origin: 100% 55%; }
-  .dh--top img { transform-origin: 50% 0; }
   .dh:nth-of-type(2n) img { animation-duration: 11s; animation-delay: -4s; }
   .dh:nth-of-type(3n) img { animation-duration: 13s; animation-delay: -7s; }
   @keyframes breathe { from { rotate: -.9deg; } to { rotate: 1deg; } }
