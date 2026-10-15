@@ -26,6 +26,7 @@
         var v = Math.min(1, y / (window.innerHeight * 0.9));
         root.style.setProperty('--veil', (v * 0.85).toFixed(3));
       }
+      root.style.setProperty('--py', reduced() ? '0px' : (Math.min(y, window.innerHeight) * 0.3).toFixed(1) + 'px');
     });
   }
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -109,6 +110,8 @@
       child.style.setProperty('--d', i);
     });
   });
+  [].forEach.call(doc.querySelectorAll('.hours tr'), function (tr, i) { tr.style.setProperty('--r', i); });
+  [].forEach.call(doc.querySelectorAll('.form > .field'), function (f, i) { f.style.setProperty('--f', i); });
   var revealTargets = [].slice.call(doc.querySelectorAll('[data-reveal], [data-words]'));
   function showAll() {
     revealTargets.forEach(function (el) {
@@ -140,6 +143,143 @@
     card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
     card.style.setProperty('--my', (e.clientY - r.top) + 'px');
   });
+
+  /* ---------- photo rows: arrows step one screenful (four cards on desktop) ---------- */
+  [].forEach.call(doc.querySelectorAll('[data-reel]'), function (reel) {
+    var track = reel.querySelector('.reel-track');
+    var prev = reel.querySelector('[data-reel-prev]');
+    var next = reel.querySelector('[data-reel-next]');
+    if (!track || !prev || !next) return;
+    [].forEach.call(track.children, function (li, i) { li.style.setProperty('--i', i); });
+
+    function pageWidth() {
+      var cs = getComputedStyle(track);
+      var gap = parseFloat(cs.columnGap) || 0;
+      var first = track.firstElementChild;
+      if (!first) return track.clientWidth;
+      var step = first.getBoundingClientRect().width + gap;
+      var inner = track.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      return Math.max(1, Math.floor((inner + gap + 1) / step)) * step;
+    }
+    function update() {
+      var max = track.scrollWidth - track.clientWidth;
+      var atStart = track.scrollLeft <= 2;
+      var atEnd = track.scrollLeft >= max - 2;
+      if (atStart && doc.activeElement === prev) next.focus({ preventScroll: true });
+      if (atEnd && doc.activeElement === next) prev.focus({ preventScroll: true });
+      prev.classList.toggle('is-off', atStart);
+      next.classList.toggle('is-off', atEnd);
+    }
+    function go(dir) {
+      track.scrollBy({ left: dir * pageWidth(), behavior: reduced() ? 'auto' : 'smooth' });
+    }
+    prev.addEventListener('click', function () { go(-1); });
+    next.addEventListener('click', function () { go(1); });
+    var queued = false;
+    track.addEventListener('scroll', function () {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () { queued = false; update(); });
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  });
+
+  /* ---------- reviews: pop in, float, tilt, open ---------- */
+  var reviewList = doc.querySelector('[data-pop]');
+  if (reviewList) {
+    var cards = [].slice.call(reviewList.children);
+    cards.forEach(function (li, i) {
+      li.style.setProperty('--r', (((i * 37) % 9) - 4) + 'deg');
+      li.style.setProperty('--bob', (5 + ((i * 7) % 4) * 0.8).toFixed(1) + 's');
+      li.style.setProperty('--sway', (i % 2 ? -0.7 : 0.7) + 'deg');
+      li.addEventListener('animationend', function (e) {
+        if (e.animationName === 'pop') li.classList.add('landed');
+      });
+    });
+    var popBatch = function (list) {
+      list.forEach(function (li, k) {
+        li.style.setProperty('--i', k);
+        li.classList.add('pop');
+      });
+    };
+    if (!('IntersectionObserver' in window) || reduced()) {
+      popBatch(cards);
+      cards.forEach(function (li) { li.classList.add('landed'); });
+    } else if (window.matchMedia('(min-width: 640px)').matches) {
+      /* several columns: the whole set pops within about two seconds */
+      var groupIo = new IntersectionObserver(function (entries) {
+        if (!entries.some(function (en) { return en.isIntersecting; })) return;
+        groupIo.disconnect();
+        popBatch(cards);
+      }, { threshold: 0.12 });
+      groupIo.observe(reviewList);
+    } else {
+      /* one column on phones: cards pop as they come into view */
+      var cardIo = new IntersectionObserver(function (entries) {
+        var batch = [];
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          cardIo.unobserve(en.target);
+          batch.push(en.target);
+        });
+        popBatch(batch);
+      }, { rootMargin: '0px 0px -6% 0px', threshold: 0.1 });
+      cards.forEach(function (li) { cardIo.observe(li); });
+    }
+
+    /* long reviews are clamped on the card; mark them so "Read it all" shows */
+    var markClamped = function () {
+      [].forEach.call(reviewList.querySelectorAll('.review'), function (fig) {
+        var p = fig.querySelector('blockquote p');
+        fig.classList.toggle('is-clamped', !!p && p.scrollHeight > p.clientHeight + 2);
+      });
+    };
+    markClamped();
+    if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(markClamped);
+    window.addEventListener('resize', markClamped);
+
+    /* tilt toward the pointer (fine pointer only) */
+    reviewList.addEventListener('pointermove', function (e) {
+      if (!finePointer.matches || reduced()) return;
+      var fig = e.target.closest ? e.target.closest('[data-tilt]') : null;
+      if (!fig) return;
+      var r = fig.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width - 0.5;
+      var py = (e.clientY - r.top) / r.height - 0.5;
+      fig.style.setProperty('--ry', (px * 10).toFixed(2) + 'deg');
+      fig.style.setProperty('--rx', (-py * 8).toFixed(2) + 'deg');
+    });
+    reviewList.addEventListener('pointerout', function (e) {
+      var fig = e.target.closest ? e.target.closest('[data-tilt]') : null;
+      if (!fig || (e.relatedTarget && fig.contains(e.relatedTarget))) return;
+      fig.style.removeProperty('--rx');
+      fig.style.removeProperty('--ry');
+    });
+
+    /* click a review to read it in full */
+    var rbox = doc.getElementById('review-box');
+    if (rbox && typeof rbox.showModal === 'function') {
+      var rbText = rbox.querySelector('[data-rb-text]');
+      var rbWho = rbox.querySelector('.rb-who');
+      var rbOpener = null;
+      reviewList.addEventListener('click', function (e) {
+        var btn = e.target.closest ? e.target.closest('.review-open') : null;
+        if (!btn) return;
+        var fig = btn.closest('.review');
+        rbOpener = btn;
+        rbText.textContent = fig.querySelector('blockquote p').textContent;
+        rbWho.textContent = fig.querySelector('.who').textContent;
+        rbox.showModal();
+      });
+      rbox.addEventListener('click', function (e) {
+        var r = rbox.getBoundingClientRect();
+        var outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+        if ((e.target === rbox && outside) || e.target.closest('.rb-close')) rbox.close();
+      });
+      rbox.addEventListener('close', function () { if (rbOpener) rbOpener.focus(); });
+    }
+  }
 
   /* ---------- lightbox ---------- */
   var box = doc.getElementById('lightbox');
