@@ -282,7 +282,8 @@
     function schedule(first) {
       clearTimeout(autoTimer);
       if (held || !onScreen || doc.hidden || reduced()) return;
-      autoTimer = setTimeout(function () { go(autoDir); schedule(); }, first && autoDir < 0 ? AUTO_MS * 1.5 : AUTO_MS);
+      /* on arrival the top row moves after 1 s and the bottom row after 2 s, then both keep the normal pace */
+      autoTimer = setTimeout(function () { go(autoDir); schedule(); }, first ? (autoDir > 0 ? 1000 : 2000) : AUTO_MS);
     }
     function hold() { held = true; clearTimeout(autoTimer); }
     function release(delay) {
@@ -302,7 +303,7 @@
       new IntersectionObserver(function (entries) {
         onScreen = entries[0].isIntersecting;
         schedule(true);
-      }, { threshold: 0.35 }).observe(reel);
+      }, { threshold: 0.2 }).observe(reel);
     }
 
     window.addEventListener('resize', function () { if (!busy) place(false); });
