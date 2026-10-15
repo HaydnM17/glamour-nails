@@ -102,6 +102,9 @@ h1, h2, h3 {
   text-wrap: balance;
 }
 h1 { font-size: var(--fs-h1); line-height: .98; }
+/* the hero name matches the wordmark: Glamour in italic */
+.hero-name { font-size: clamp(3.2rem, 15vw, 7.5rem); line-height: .95; }
+.hero-name .w:first-child .wi { font-style: italic; }
 h2 { font-size: var(--fs-h2); }
 h3 { font-size: var(--fs-h3); line-height: 1.15; }
 
