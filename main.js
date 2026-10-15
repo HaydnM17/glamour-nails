@@ -596,7 +596,7 @@
 
 /* ---------- nav links land on the section heading ---------- */
 /* Some sections open with a "Their set" hand photo. A nav link to one of those lands on the heading below it,
-   so Photos opens on "The work" and Visit on "Hours and address" (Haydn, 2026-10-15). */
+   so Photos opens on "Our work" and Visit on "Hours and address" (Haydn, 2026-10-15). */
 (function () {
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.addEventListener('click', function (e) {

@@ -334,10 +334,9 @@ body[data-grammar="bands"] .site-footer { background: var(--surface); }
 }
 .dark-top { position: absolute; inset: 0 0 auto 0; height: clamp(560px, 100svh, 1000px); z-index: 0; pointer-events: none; }
 .dark-top-hand {
-  position: absolute; top: -48px; left: 50%;
+  position: absolute; top: -64px; left: 50%;
   width: max(900px, 100%); max-width: none; height: auto;
   transform: translateX(-50%);
-  translate: 0 var(--hy, 0px);
   transform-origin: 50% 0;
   mix-blend-mode: lighten;
   -webkit-mask: linear-gradient(to bottom, #000 80%, transparent 99%);
@@ -401,7 +400,8 @@ body[data-grammar="bands"] .site-footer { background: var(--surface); }
   /* a small drift down while the light comes up; the sway starts from level so nothing jumps when it begins */
   .dark-top { animation: descend 2.6s cubic-bezier(.22, .61, .36, 1) both; }
   @keyframes descend { from { transform: translateY(-4%); } }
-  .dark-top-hand { animation: lightup 2.6s ease-out both, sway 11s linear 2.6s infinite; }
+  /* the hero hand settles in once on load, then stays still (no sway, no scroll drift) */
+  .dark-top-hand { animation: lightup 2.6s ease-out both; }
   @keyframes lightup { from { filter: blur(8px) brightness(.15); scale: 1.03; } }
   @keyframes sway {
     0% { rotate: 0deg; } 12.5% { rotate: -.78deg; } 25% { rotate: -1.1deg; } 37.5% { rotate: -.78deg; }
@@ -450,6 +450,27 @@ body[data-grammar="bands"] .site-footer { background: var(--surface); }
 .dh-view:hover { background: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
 .dh--right figcaption .dh-view { margin-left: auto; }
 @media (min-width: 900px) { .dh--right figcaption .dh-view { margin-left: 0; } }
+
+/* Instagram: one glyph, used in the header, hero, Our work, the hours card and the footer */
+.ig { width: 1.15em; height: 1.15em; flex: none; }
+.ig-link { display: inline-flex; align-items: center; gap: 8px; }
+.ig-btn {
+  display: grid; place-items: center; flex: none; width: 44px; height: 44px;
+  border: 1px solid var(--line-strong); border-radius: 50%; color: var(--ink);
+  transition: background var(--t-ui) ease, color var(--t-ui) ease, border-color var(--t-ui) ease, transform var(--t-ui) var(--ease-out);
+}
+.ig-btn .ig { width: 20px; height: 20px; }
+.ig-btn:hover { background: var(--accent); border-color: var(--accent); color: var(--on-accent); transform: translateY(-2px); }
+body:not(.menu-open) .site-header.on-dark .ig-btn { color: #F4ECE8; border-color: rgba(244, 236, 232, .45); }
+.hero-ig { margin-top: 4px; min-height: 44px; font-size: var(--fs-small); font-weight: 600; color: var(--dark-ink-2); text-decoration: none; }
+.hero-ig:hover { color: var(--dark-ink); text-decoration: underline; }
+@media (min-width: 900px) { .ig-btn { order: 3; } .site-header .btn-call { order: 4; } }
+.brand { white-space: nowrap; }
+@media (max-width: 420px) {
+  .header-inner { gap: 8px; }
+  .brand { font-size: 1.1rem; gap: 8px; }
+  .site-header .btn-call { padding: 0 16px; }
+}
 
 /* header over the dark opening */
 body:not(.menu-open) .site-header.on-dark::before { opacity: 1; background: rgba(0, 0, 0, .55); border-bottom-color: rgba(244, 236, 232, .08); }
