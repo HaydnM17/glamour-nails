@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500&family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=7">
+<link rel="stylesheet" href="styles.css?v=8">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body data-grammar="bands">
@@ -35,7 +35,7 @@
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
-    <a class="btn btn-primary btn-call" href="tel:+19055638889">Call</a>
+    <a class="btn btn-primary btn-call" href="#contact">Book<span class="book-long">&nbsp;an appointment</span></a>
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">
       <span class="sr">Menu</span>
       <span class="bars" aria-hidden="true"></span>
@@ -62,7 +62,8 @@
       <h1 data-words>Nail salon on King Street in Beamsville</h1>
       <p class="lede" data-reveal style="--d:2">Acrylic, BIOSEAWEED, Gel X and dipping, at 4958 King St.</p>
       <div class="actions" data-reveal style="--d:3">
-        <a class="btn btn-primary" href="tel:+19055638889">Call (905) 563-8889</a>
+        <a class="btn btn-primary" href="#contact">Book an appointment</a>
+        <a class="btn btn-ghost" href="tel:+19055638889">Call (905) 563-8889</a>
         <a class="btn btn-ghost" href="#work">See the work</a>
         <a class="pill" href="#visit" data-open-pill hidden><span class="dot" aria-hidden="true"></span><span data-open-text></span></a>
       </div>
@@ -107,7 +108,11 @@
     </div>
   </section>
 
-  <section class="section section--alt" id="work" aria-labelledby="work-h">
+  <section class="section section--dark" id="work" aria-labelledby="work-h">
+    <figure class="dh dh--right" data-hand style="--speed:-60">
+      <img src="assets/hands/hand-blackgold.jpg" width="1400" height="1045" loading="lazy" alt="A hand reaching in from the right, glossy black almond nails edged with tiny gold dots.">
+      <figcaption><span>Their set</span>Black with gold edging</figcaption>
+    </figure>
     <div class="wrap">
       <div class="section-head" data-reveal>
         <h2 id="work-h" data-words>The work</h2>
@@ -154,6 +159,10 @@
         <button class="reel-btn reel-next" type="button" data-reel-next aria-label="Show more photos, bottom row"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       </div>
     </div>
+    <figure class="dh dh--left" data-hand style="--speed:-80">
+      <img src="assets/hands/hand-tortoise.jpg" width="1400" height="1045" loading="lazy" alt="A hand reaching in from the left, almond nails in chocolate brown, tortoiseshell and a sheer pink nail with a small brown flower.">
+      <figcaption><span>Their set</span>Tortoiseshell and brown</figcaption>
+    </figure>
   </section>
 
   <dialog class="lightbox" id="lightbox" aria-label="Photo">
@@ -243,6 +252,7 @@
           <button class="review-open" type="button" aria-label="Open the review by Maureen O."></button>
         </figure></div></li>
       </ul>
+      <p class="reviews-swipe" aria-hidden="true">Swipe for more reviews <svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></p>
       <p class="reviews-after" data-reveal><a class="btn btn-ghost" href="https://www.google.com/maps/search/?api=1&amp;query=Glamour%20Nails%204958%20King%20St%20Beamsville" rel="noopener">More reviews on Google</a></p>
     </div>
   </section>
@@ -255,7 +265,11 @@
     <p class="rb-src">Google review. <a href="https://www.google.com/maps/search/?api=1&amp;query=Glamour%20Nails%204958%20King%20St%20Beamsville" rel="noopener">More reviews on Google</a></p>
   </dialog>
 
-  <section class="section section--alt" id="visit" aria-labelledby="visit-h">
+  <section class="section section--dark" id="visit" aria-labelledby="visit-h">
+    <figure class="dh dh--left" data-hand style="--speed:-70">
+      <img src="assets/hands/hand-jackolantern.jpg" width="1400" height="1045" loading="lazy" alt="A hand reaching in from the left, short nails in gold chrome with jack-o-lantern faces.">
+      <figcaption><span>Their set</span>Gold jack-o&#39;-lanterns</figcaption>
+    </figure>
     <div class="wrap">
       <div class="section-head" data-reveal>
         <h2 id="visit-h" data-words>Hours and address</h2>
@@ -286,13 +300,18 @@
         </div>
       </div>
     </div>
+    <figure class="dh dh--right" data-hand style="--speed:-55">
+      <img src="assets/hands/hand-petals.jpg" width="1400" height="1045" loading="lazy" alt="A hand reaching in from the right, long square pink nails with white petals and tiny gold beads.">
+      <figcaption><span>Their set</span>White petals, gold beads</figcaption>
+    </figure>
   </section>
 
   <section class="section" id="contact" aria-labelledby="contact-h">
     <div class="wrap">
       <div class="section-head" data-reveal>
-        <h2 id="contact-h" data-words>Send a message</h2>
-        <p>Or call <a href="tel:+19055638889">(905) 563-8889</a>.</p>
+        <p class="kicker"><span class="motif" aria-hidden="true"></span>Appointments</p>
+        <h2 id="contact-h" data-words>Book an appointment</h2>
+        <p>Pick a service and a time that suits you. Or call <a href="tel:+19055638889">(905) 563-8889</a> to book.</p>
       </div>
       <form class="form" id="contact-form" novalidate data-reveal>
         <div class="field">
@@ -306,12 +325,28 @@
           <p class="err" id="e-reach"></p>
         </div>
         <div class="field">
-          <label for="f-need">What you need</label>
-          <textarea id="f-need" name="need" rows="4" aria-describedby="e-need"></textarea>
-          <p class="err" id="e-need"></p>
+          <label for="f-service">Service</label>
+          <select id="f-service" name="service" aria-describedby="e-service">
+            <option value="">Choose a service</option>
+            <option>Acrylic</option>
+            <option>BIOSEAWEED</option>
+            <option>Gel X</option>
+            <option>Dipping</option>
+            <option>Something else</option>
+          </select>
+          <p class="err" id="e-service"></p>
+        </div>
+        <div class="field">
+          <label for="f-when">Preferred day and time</label>
+          <input id="f-when" name="when" type="text" placeholder="For example, Saturday morning" aria-describedby="e-when">
+          <p class="err" id="e-when"></p>
+        </div>
+        <div class="field">
+          <label for="f-need">Anything else <span class="opt">(optional)</span></label>
+          <textarea id="f-need" name="need" rows="3" placeholder="A design you have in mind, or a photo to bring"></textarea>
         </div>
         <div class="hp" aria-hidden="true"><label>Leave empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-        <button class="btn btn-primary" type="submit">Send</button>
+        <button class="btn btn-primary" type="submit">Request an appointment</button>
         <p class="status" id="form-status" role="status" aria-live="polite"></p>
         <p class="form-note">Preview form. Nothing is sent from this page.</p>
       </form>
@@ -348,6 +383,6 @@
   </div>
 </footer>
 
-<script src="main.js?v=6" defer></script>
+<script src="main.js?v=7" defer></script>
 </body>
 </html>

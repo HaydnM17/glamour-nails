@@ -17,10 +17,19 @@
   var ticking = false;
 
   /* dark opening: the top hand drifts slower than the page; side hands slide in from their edge */
+  var darkZones = [].slice.call(doc.querySelectorAll('.dark, .section--dark'));
   function updateDark(y) {
     if (!darkSec) return;
     var vh = window.innerHeight;
-    if (header) header.classList.toggle('on-dark', darkSec.getBoundingClientRect().bottom > header.offsetHeight + 4);
+    if (header) {
+      var hh = header.offsetHeight;
+      var onDark = darkZones.some(function (z, i) {
+        var r = z.getBoundingClientRect();
+        var pad = i === 0 ? 0 : Math.min(170, vh * 0.14);
+        return r.top + pad <= hh && r.bottom - pad > hh;
+      });
+      header.classList.toggle('on-dark', onDark);
+    }
     var still = reduced();
     root.style.setProperty('--hy', still ? '0px' : (Math.min(y, vh * 1.2) * 0.35).toFixed(1) + 'px');
     hands.forEach(function (fig) {
@@ -263,6 +272,39 @@
       if (swallowClick) { e.stopPropagation(); e.preventDefault(); swallowClick = false; }
     }, true);
 
+    /* auto-advance: the rows move in opposite directions, and pause for hover, focus, touch or when off screen */
+    var autoDir = reel.getAttribute('data-from') === 'left' ? -1 : 1;
+    var AUTO_MS = 4200;
+    var autoTimer = 0;
+    var held = false;
+    var onScreen = false;
+    var holdTimer = 0;
+    function schedule(first) {
+      clearTimeout(autoTimer);
+      if (held || !onScreen || doc.hidden || reduced()) return;
+      autoTimer = setTimeout(function () { go(autoDir); schedule(); }, first && autoDir < 0 ? AUTO_MS * 1.5 : AUTO_MS);
+    }
+    function hold() { held = true; clearTimeout(autoTimer); }
+    function release(delay) {
+      clearTimeout(holdTimer);
+      holdTimer = setTimeout(function () { held = false; schedule(); }, delay || 0);
+    }
+    reel.addEventListener('mouseenter', hold);
+    reel.addEventListener('mouseleave', function () { release(600); });
+    reel.addEventListener('focusin', hold);
+    reel.addEventListener('focusout', function () { release(1500); });
+    viewport.addEventListener('touchstart', function () { hold(); release(6000); }, { passive: true });
+    prev.addEventListener('click', function () { schedule(); });
+    next.addEventListener('click', function () { schedule(); });
+    doc.addEventListener('visibilitychange', function () { schedule(); });
+    reduceQuery.addEventListener('change', function () { schedule(); });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        onScreen = entries[0].isIntersecting;
+        schedule(true);
+      }, { threshold: 0.35 }).observe(reel);
+    }
+
     window.addEventListener('resize', function () { if (!busy) place(false); });
     place(false);
   });
@@ -469,7 +511,8 @@
     var fields = [
       { id: 'f-name', err: 'e-name', msg: 'Please add your name.' },
       { id: 'f-reach', err: 'e-reach', msg: 'Please add a phone number or email.' },
-      { id: 'f-need', err: 'e-need', msg: 'Please say what you need.' }
+      { id: 'f-service', err: 'e-service', msg: 'Please choose a service.' },
+      { id: 'f-when', err: 'e-when', msg: 'Please add a day and time that suits you.' }
     ];
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -485,7 +528,7 @@
       });
       if (firstBad) { firstBad.focus(); return; }
       status.setAttribute('data-state', 'info');
-      status.textContent = 'This is a preview, so nothing was sent. To reach Glamour Nails, call (905) 563-8889.';
+      status.textContent = 'This is a preview, so nothing was sent. To book now, call (905) 563-8889.';
     });
   }
 

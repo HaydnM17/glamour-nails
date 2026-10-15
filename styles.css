@@ -273,7 +273,9 @@ main, .site-footer { position: relative; z-index: 1; }
 @keyframes sheen { 0%, 70% { transform: translateX(-160%) skewX(-18deg); } 100% { transform: translateX(380%) skewX(-18deg); } }
 .btn-ghost { border-color: var(--hero-ink); color: var(--hero-ink); background: transparent; }
 .btn-ghost:hover { background: rgba(var(--ground-rgb), .5); }
-.btn-call { min-height: 44px; padding: 0 20px; }
+.btn-call { min-height: 44px; padding: 0 20px; gap: 0; }
+.book-long { display: none; }
+@media (min-width: 1100px) { .book-long { display: inline; } }
 
 .pill {
   display: inline-flex; align-items: center; gap: 8px;
@@ -391,24 +393,45 @@ body[data-grammar="bands"] .site-footer { background: var(--surface); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .dark-top { animation: descend 2s var(--ease-out) both; }
-  @keyframes descend { from { transform: translateY(-30%); opacity: 0; } }
-  .dark-top-hand { animation: sway 7s ease-in-out 2s infinite alternate; }
-  @keyframes sway { from { rotate: -1.2deg; } to { rotate: 1.2deg; } }
-  .dh img { will-change: transform; }
-  .dh--left img {
-    transform-origin: 0 50%;
-    transform: translateX(calc((1 - var(--in, 1)) * -22%)) translateY(calc(var(--p, 0) * var(--speed, -60) * 1px)) rotate(calc((1 - var(--in, 1)) * -6deg));
+  /* film, not slides: hands rack into focus, the light comes up, the camera eases in, then they breathe */
+  .dark-top { animation: descend 2.4s var(--ease-out) both; }
+  @keyframes descend { from { transform: translateY(-18%); } }
+  .dark-top-hand { animation: lightup 3s ease-out both, sway 8s ease-in-out 2.4s infinite alternate; }
+  @keyframes lightup { from { filter: blur(10px) brightness(.15); scale: 1.08; } }
+  @keyframes sway { from { rotate: -1.1deg; } to { rotate: 1.1deg; } }
+  .dh img {
+    will-change: transform, filter;
+    transform: translateY(calc(var(--p, 0) * var(--speed, -60) * 1px)) scale(calc(1.14 - var(--in, 1) * .14));
+    filter: blur(calc((1 - var(--in, 1)) * 9px)) brightness(calc(.25 + var(--in, 1) * .75));
+    animation: breathe 9s ease-in-out infinite alternate;
   }
-  .dh--right img {
-    transform-origin: 100% 50%;
-    transform: translateX(calc((1 - var(--in, 1)) * 22%)) translateY(calc(var(--p, 0) * var(--speed, -60) * 1px)) rotate(calc((1 - var(--in, 1)) * 6deg));
+  .dh--left img { transform-origin: 0 55%; }
+  .dh--right img { transform-origin: 100% 55%; }
+  .dh:nth-of-type(2n) img { animation-duration: 11s; animation-delay: -4s; }
+  .dh:nth-of-type(3n) img { animation-duration: 13s; animation-delay: -7s; }
+  @keyframes breathe { from { rotate: -.9deg; } to { rotate: 1deg; } }
+  .dh figcaption {
+    opacity: var(--in, 1);
+    transform: translateY(calc((1 - var(--in, 1)) * 28px));
+    letter-spacing: calc((1 - var(--in, 1)) * .12em);
   }
-  .dh figcaption { opacity: var(--in, 1); transform: translateY(calc((1 - var(--in, 1)) * 36px)); }
+  .dark::after, .section--dark::after { animation: grain .9s steps(5) infinite; }
+  @keyframes grain {
+    0% { background-position: 0 0; } 20% { background-position: -60px 40px; } 40% { background-position: 50px -70px; }
+    60% { background-position: -90px -20px; } 80% { background-position: 30px 80px; } 100% { background-position: 0 0; }
+  }
+}
+
+/* film grain: one even layer over each dark section, so it has no edges of its own */
+.dark::after, .section--dark::after {
+  content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  opacity: .07;
+  background-size: 180px 180px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* header over the dark opening */
-body:not(.menu-open) .site-header.on-dark::before { opacity: 0; }
+body:not(.menu-open) .site-header.on-dark::before { opacity: 1; background: rgba(0, 0, 0, .55); border-bottom-color: rgba(244, 236, 232, .08); }
 body:not(.menu-open) .site-header.on-dark .brand { color: #F4ECE8; }
 body:not(.menu-open) .site-header.on-dark .logo-mark { color: #D05A72; }
 body:not(.menu-open) .site-header.on-dark .menu-btn { border-color: rgba(244, 236, 232, .5); }
@@ -422,6 +445,28 @@ body:not(.menu-open) .site-header.on-dark .menu-btn[aria-expanded="true"] .bars 
   .site-header.on-dark .nav a[aria-current="true"] { color: #E58A9C; }
 }
 .site-header .brand, .site-header .nav ul, .site-header .nav a { transition: color var(--t-ui) ease, background var(--t-ui) ease, border-color var(--t-ui) ease; }
+
+/* dark sections between the light ones: same tokens, flipped, with soft fades in and out */
+.section--dark {
+  --ink: #F4ECE8;
+  --ink-2: rgba(244, 236, 232, .74);
+  --line: rgba(244, 236, 232, .16);
+  --line-strong: rgba(244, 236, 232, .42);
+  --surface: #141113;
+  --ground-rgb: 0, 0, 0;
+  --fade: clamp(90px, 14vh, 170px);
+  position: relative; overflow: hidden; isolation: isolate;
+  color: var(--ink);
+}
+body[data-grammar="bands"] .section--dark {
+  background: linear-gradient(to bottom, #F7EEEA, #000 var(--fade), #000 calc(100% - var(--fade)), #F7EEEA);
+}
+.section--dark > .wrap, .section--dark > .reels { position: relative; z-index: 2; }
+.section--dark .motif { background: #D05A72; }
+.section--dark :focus-visible { outline-color: #E58A9C; }
+.section--dark .visit-card { background: rgba(255, 255, 255, .05); }
+.section--dark .btn-primary { color: var(--on-accent); }
+.section--dark .dh:first-child { margin-top: calc(var(--section-y) * -.4); }
 
 /* services */
 .services { border-top: 1px solid var(--line); }
@@ -525,8 +570,24 @@ body:not(.menu-open) .site-header.on-dark .menu-btn[aria-expanded="true"] .bars 
           mask: var(--star) 0 50% / 1.1em 1em repeat-x;
 }
 
-.reviews { columns: 1; column-gap: 18px; }
-.reviews > li { break-inside: avoid; padding-bottom: 18px; }
+/* phones: one swipeable row so the reviews take one card of height; wider: floating columns */
+.reviews {
+  display: flex; gap: 14px; align-items: stretch;
+  overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory;
+  margin-inline: calc(var(--gutter) * -1); padding: 12px var(--gutter) 30px; scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+.reviews::-webkit-scrollbar { display: none; }
+.reviews > li { flex: 0 0 84%; scroll-snap-align: start; break-inside: avoid; }
+.reviews > li > .float, .reviews .review { height: 100%; }
+.reviews-swipe { display: flex; align-items: center; gap: 8px; margin: -12px 0 0; font-size: var(--fs-small); font-weight: 600; color: var(--ink-2); }
+.reviews-swipe svg { width: 18px; height: 18px; }
+@media (min-width: 640px) {
+  .reviews { display: block; columns: 2; column-gap: 18px; overflow: visible; margin-inline: 0; padding: 0; }
+  .reviews > li { padding-bottom: 18px; }
+  .reviews > li > .float, .reviews .review { height: auto; }
+  .reviews-swipe { display: none; }
+}
 .review {
   position: relative; overflow: hidden;
   padding: 24px 24px 20px;
@@ -620,7 +681,8 @@ body[data-grammar="bands"] .section--alt .visit-card { background: var(--ground)
 .form { display: grid; gap: 18px; max-width: 560px; }
 .field { display: grid; gap: 6px; }
 .field label { font-weight: 600; }
-.field input, .field textarea {
+.field .opt { font-weight: 400; color: var(--ink-2); }
+.field input, .field textarea, .field select {
   width: 100%; min-height: 52px; padding: 12px 14px;
   background: var(--ground); border: 1px solid var(--line-strong); border-radius: var(--radius);
   font-size: 1rem;
@@ -734,7 +796,7 @@ body[data-grammar="bands"] .section--alt .visit-card { background: var(--ground)
   .js .form > .field { opacity: 0; transform: translateY(18px); transition: opacity .7s var(--ease-out) calc(var(--f, 0) * 90ms + 150ms), transform .7s var(--ease-out) calc(var(--f, 0) * 90ms + 150ms); }
   .form.in > .field { opacity: 1; transform: none; }
   .field input, .field textarea { transition: border-color var(--t-ui) ease, box-shadow var(--t-ui) ease; }
-  .field input:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(125, 31, 50, .12); }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(125, 31, 50, .12); }
 }
 
 @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
