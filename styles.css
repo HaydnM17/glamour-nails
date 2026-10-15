@@ -366,6 +366,11 @@ body[data-grammar="bands"] .site-footer { background: var(--surface); }
           mask: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
 }
 .dh--right img { margin-left: -25vw; }
+.dh--top img {
+  width: 170vw; margin-left: -35vw;
+  -webkit-mask: linear-gradient(to bottom, transparent, #000 22%, #000 72%, transparent);
+          mask: linear-gradient(to bottom, transparent, #000 22%, #000 72%, transparent);
+}
 .dh figcaption {
   position: relative; z-index: 1;
   margin: -8vw var(--gutter) 28px;
@@ -390,15 +395,22 @@ body[data-grammar="bands"] .site-footer { background: var(--surface); }
   }
   .dh--left figcaption { right: max(var(--gutter), (100vw - var(--max)) / 2); }
   .dh--right figcaption { left: max(var(--gutter), (100vw - var(--max)) / 2); text-align: left; }
+  .dh--top { height: clamp(440px, 74vh, 760px); }
+  .dh--top img { left: 50%; width: min(100vw, 1440px); translate: -50% -50%; margin-left: 0; }
+  .dh--top figcaption { left: max(var(--gutter), (100vw - var(--max)) / 2); top: 70%; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   /* film, not slides: hands rack into focus, the light comes up, the camera eases in, then they breathe */
-  .dark-top { animation: descend 2.4s var(--ease-out) both; }
-  @keyframes descend { from { transform: translateY(-18%); } }
-  .dark-top-hand { animation: lightup 3s ease-out both, sway 8s ease-in-out 2.4s infinite alternate; }
-  @keyframes lightup { from { filter: blur(10px) brightness(.15); scale: 1.08; } }
-  @keyframes sway { from { rotate: -1.1deg; } to { rotate: 1.1deg; } }
+  /* a small drift down while the light comes up; the sway starts from level so nothing jumps when it begins */
+  .dark-top { animation: descend 2.6s cubic-bezier(.22, .61, .36, 1) both; }
+  @keyframes descend { from { transform: translateY(-4%); } }
+  .dark-top-hand { animation: lightup 2.6s ease-out both, sway 11s linear 2.6s infinite; }
+  @keyframes lightup { from { filter: blur(8px) brightness(.15); scale: 1.03; } }
+  @keyframes sway {
+    0% { rotate: 0deg; } 12.5% { rotate: -.78deg; } 25% { rotate: -1.1deg; } 37.5% { rotate: -.78deg; }
+    50% { rotate: 0deg; } 62.5% { rotate: .78deg; } 75% { rotate: 1.1deg; } 87.5% { rotate: .78deg; } 100% { rotate: 0deg; }
+  }
   .dh img {
     will-change: transform, filter;
     transform: translateY(calc(var(--p, 0) * var(--speed, -60) * 1px)) scale(calc(1.14 - var(--in, 1) * .14));
@@ -407,6 +419,7 @@ body[data-grammar="bands"] .site-footer { background: var(--surface); }
   }
   .dh--left img { transform-origin: 0 55%; }
   .dh--right img { transform-origin: 100% 55%; }
+  .dh--top img { transform-origin: 50% 0; }
   .dh:nth-of-type(2n) img { animation-duration: 11s; animation-delay: -4s; }
   .dh:nth-of-type(3n) img { animation-duration: 13s; animation-delay: -7s; }
   @keyframes breathe { from { rotate: -.9deg; } to { rotate: 1deg; } }
