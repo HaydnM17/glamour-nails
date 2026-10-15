@@ -417,7 +417,7 @@
       opener = btn;
       var thumb = btn.querySelector('img');
       boxImg.src = btn.getAttribute('data-lightbox');
-      boxImg.alt = thumb ? thumb.alt : '';
+      boxImg.alt = thumb ? thumb.alt : (btn.getAttribute('data-alt') || '');
       boxCap.textContent = btn.getAttribute('data-caption') || '';
       boxCap.hidden = !boxCap.textContent;
       box.showModal();
