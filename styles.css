@@ -466,9 +466,23 @@ body:not(.menu-open) .site-header.on-dark .ig-btn { color: #F4ECE8; border-color
 .hero-ig:hover { color: var(--dark-ink); text-decoration: underline; }
 @media (min-width: 900px) { .ig-btn { order: 3; } .site-header .btn-call { order: 4; } }
 .brand { white-space: nowrap; }
+/* the address sits under the logo in the top bar and opens Google Maps */
+.brand-wrap { display: flex; flex-direction: column; justify-content: center; margin-right: auto; min-width: 0; }
+.brand-wrap .brand { margin-right: 0; min-height: 0; line-height: 1.15; }
+.brand-addr {
+  display: inline-flex; align-items: center; width: fit-content; min-height: 22px;
+  padding-left: calc(1.25rem + 10px);
+  font-size: .78rem; font-weight: 600; letter-spacing: .01em; white-space: nowrap;
+  color: var(--ink-2); text-decoration: none;
+  transition: color var(--t-ui) ease;
+}
+.brand-addr:hover { color: var(--accent); text-decoration: underline; }
+body:not(.menu-open) .site-header.on-dark .brand-addr { color: rgba(244, 236, 232, .72); }
+body:not(.menu-open) .site-header.on-dark .brand-addr:hover { color: #F4ECE8; }
 @media (max-width: 420px) {
   .header-inner { gap: 8px; }
   .brand { font-size: 1.1rem; gap: 8px; }
+  .brand-addr { padding-left: 0; font-size: .7rem; min-height: 20px; }
   .site-header .btn-call { padding: 0 16px; }
 }
 
